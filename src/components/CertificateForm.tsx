@@ -7,26 +7,59 @@ const CertificateForm = () => {
   const [courseTitle, setCourseTitle] = useState("");
   const [primaryColor, setPrimaryColor] = useState("Blue");
   const [sealType, setSealType] = useState("Star");
-  const [csvData, setCsvData] = useState<any[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string[] | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-      Papa.parse(file, {
-        header: true,
-        complete: (results) => {
-          setCsvData(results.data);
-          console.log(results.data);
-        },
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) {
+      setError("Please upload a CSV file.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("courseTitle", courseTitle);
+    formData.append("primaryColor", primaryColor);
+    formData.append("sealType", sealType);
+
+    try {
+      const response = await fetch("/api/issue", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to issue certificates");
+      }
+
+      const result = await response.json();
+      setSuccess(result.transactionHashes);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-8 mt-10 bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label htmlFor="courseTitle" className="block mb-2 text-sm font-medium text-gray-300">
             Course Title
@@ -114,6 +147,34 @@ const CertificateForm = () => {
             </label>
           </div>
         </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:bg-gray-500"
+        >
+          {loading ? "Issuing..." : "Issue Certificates"}
+        </button>
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+        {success && (
+          <div className="mt-4 p-4 bg-green-900 rounded-lg">
+            <h3 className="font-bold text-green-400">Success!</h3>
+            <p className="text-sm text-gray-300">Certificates issued. Transaction Hashes:</p>
+            <ul className="list-disc list-inside mt-2 text-xs text-gray-400">
+              {success.map((hash, index) => (
+                <li key={index}>
+                  <a
+                    href={`https://mumbai.polygonscan.com/tx/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-white"
+                  >
+                    {hash}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </form>
     </div>
   );
