@@ -1,6 +1,2 @@
-name,email
-"Alice Johnson","alice.j@example.com"
-"Bob Williams","bob.w@example.com"
-"Charlie Brown","charlie.b@example.com"
-"Diana Miller","diana.m@example.com"
-"Ethan Davis","ethan.d@example.com"
+name,email,walletAddress
+"Alice Johnson","alice.j@example.com","0x9d60e9ab4281Aa0bb6a26AD4d3F15C9598ba187d"

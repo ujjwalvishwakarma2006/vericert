@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Papa from "papaparse";
 
-const CertificateForm = () => {
+interface CertificateFormProps {
+  components?: any[];
+  canvasSettings?: any;
+}
+
+const CertificateForm = ({ components = [], canvasSettings }: CertificateFormProps) => {
   const [courseTitle, setCourseTitle] = useState("");
   const [primaryColor, setPrimaryColor] = useState("Blue");
   const [sealType, setSealType] = useState("Star");
@@ -38,6 +43,11 @@ const CertificateForm = () => {
       return;
     }
 
+    if (components.length === 0) {
+      setError("Please add some components to your certificate design.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -47,6 +57,13 @@ const CertificateForm = () => {
     formData.append("primaryColor", primaryColor);
     formData.append("sealType", sealType);
     formData.append("file", csvFile);
+    
+    // Add the certificate design data
+    const designData = {
+      components,
+      canvasSettings
+    };
+    formData.append("designData", JSON.stringify(designData));
 
     try {
       const response = await fetch("/api/issue", {

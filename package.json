@@ -9,10 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@napi-rs/canvas": "^0.1.78",
+    "@types/nanoid": "^2.1.0",
+    "nanoid": "^5.1.5",
     "next": "15.5.2",
     "papaparse": "^5.5.3",
     "react": "19.1.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
