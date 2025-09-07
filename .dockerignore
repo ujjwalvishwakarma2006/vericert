@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+npm-debug.log
+.next/cache
+
+# Local env files
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# OS / Editor
+.DS_Store
+*.swp
+.vscode
+
+# Exclude test coverage or reports
+coverage

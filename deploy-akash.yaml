@@ -1,0 +1,53 @@
+# Akash SDL for deploying the vericert Next.js app
+# Docs: https://akash.network/docs
+version: "2.0"
+
+services:
+  web:
+    image: <YOUR_DOCKER_IMAGE>
+    # If you push to Docker Hub public repo: username/vericert:latest
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+        accept:
+          - wildcard
+    env:
+      - NODE_ENV=production
+    command: ["node", "server.js"]
+    resources:
+      cpu:
+        units: 2
+      memory:
+        size: 6Gi
+      storage:
+        size: 10Gi
+
+profiles:
+  compute:
+    web:
+      resources:
+        cpu:
+          units: 2
+        memory:
+          size: 6Gi
+        storage:
+          size: 10Gi
+  placement:
+    akash:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - akash146h8gad20jvQP6N0v37hC2f2v6tx9ap8t6p7gk
+      pricing:
+        web:
+          denom: uakt
+          amount: 5000
+
+deployment:
+  web:
+    akash:
+      profile: web
+      count: 1
