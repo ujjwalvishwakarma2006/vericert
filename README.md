@@ -82,3 +82,13 @@ The exposed port 3000 is mapped to port 80 globally. Once the lease is active, u
 3. `docker push youruser/vericert:v2`
 4. Duplicate previous deployment in Akash Console, update image tag, deploy.
 
+### GitHub Actions (CI)
+
+A workflow `.github/workflows/docker-build.yml` builds & pushes images on every push to `main`.
+
+Required GitHub repo secrets:
+- `DOCKERHUB_USERNAME` – your Docker Hub username
+- `DOCKERHUB_TOKEN` – a PAT (Docker Hub access token) with write access
+
+After a push, grab the short SHA tag (printed in logs) to update `deploy-akash.yaml` if you want an immutable deployment instead of `latest`.
+
